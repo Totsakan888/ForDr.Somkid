@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlashDr. — Mini Flashcard & Quiz App</title>
+  
+  <!-- Modern Fonts: Plus Jakarta Sans for UI/Code, Prompt for Thai -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="dark-theme">
+  <!-- Ambient background glow elements -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>FlashDr. <span class="tag-version">EduTech</span></h1>
+          <p class="subtitle">ระบบ Flashcard ทบทวนคำศัพท์ & คอนฟิกเครือข่าย</p>
+        </div>
+      </div>
+
+      <!-- Live Gamification Bar -->
+      <div class="header-stats">
+        <div class="stat-pill streak-pill" title="จำนวนการทบทวนต่อเนื่อง">
+          <span class="pill-icon">🔥</span>
+          <span class="pill-label">Streak</span>
+          <span class="pill-value" id="streak-counter">0</span>
+        </div>
+        <div class="stat-pill progress-pill" title="อัตราการจำได้แม่นยำ">
+          <span class="pill-icon">🎯</span>
+          <span class="pill-label">Mastery</span>
+          <span class="pill-value" id="mastery-percent">0%</span>
+        </div>
+        <button id="sound-toggle-btn" class="icon-btn" title="เปิด/ปิดเสียงเอฟเฟกต์">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs & Mode Switcher -->
+    <nav class="mode-navigation">
+      <div class="tabs-container">
+        <button class="nav-tab active" data-tab="study">
+          <span class="tab-icon">🎴</span> โหมดทบทวนการ์ด
+        </button>
+        <button class="nav-tab" data-tab="manage">
+          <span class="tab-icon">📋</span> รายการการ์ดทั้งหมด (<span id="total-count-badge">0</span>)
+        </button>
+      </div>
+
+      <div class="action-buttons">
+        <button id="btn-add-modal" class="btn btn-primary">
+          <span class="btn-icon">+</span> เพิ่มการ์ดใหม่
+        </button>
+      </div>
+    </nav>
+
+    <!-- MAIN VIEW 1: FLASHCARD STUDY MODE -->
+    <section id="study-view" class="view-section active">
+      <!-- Category Filter Pills -->
+      <div class="filter-bar">
+        <span class="filter-label">หมวดหมู่:</span>
+        <div class="categories-scroll" id="study-categories">
+          <button class="category-chip active" data-category="All">ทั้งหมด</button>
+        </div>
+      </div>
+
+      <!-- Deck Progress Status Bar -->
+      <div class="deck-status">
+        <div class="status-meta">
+          <span id="card-index-indicator">กำลังโหลด...</span>
+          <span id="deck-completion-text">เป้าหมาย: ทบทวนให้ครบทุกใบ</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="study-progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- 3D FLIP CARD CONTAINER -->
+      <div class="flashcard-scene">
+        <div class="flashcard" id="main-flashcard">
+          <!-- FRONT FACE (Question) -->
+          <div class="card-face card-front">
+            <div class="card-topbar">
+              <span class="card-category" id="card-front-category">Category</span>
+              <span class="card-difficulty" id="card-front-difficulty">Medium</span>
+            </div>
+
+            <div class="card-body">
+              <div class="card-role-label">คำถาม / หัวข้อ (Question)</div>
+              <h2 class="card-question" id="card-front-question">กำลังโหลดการ์ด...</h2>
+              
+              <div class="hint-container" id="hint-wrapper" style="display: none;">
+                <div class="hint-content">
+                  <span class="hint-icon">💡</span>
+                  <span id="card-front-hint">คำใบ้</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <button class="btn-hint" id="btn-toggle-hint" style="display: none;">
+                💡 ดูคำใบ้
+              </button>
+              <div class="flip-instruction">
+                <span class="key-tag">Spacebar</span> หรือ <span>แตะการ์ดเพื่อพลิกคำตอบ ↺</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BACK FACE (Answer) -->
+          <div class="card-face card-back">
+            <div class="card-topbar">
+              <span class="card-category" id="card-back-category">Category</span>
+              <span class="mastered-tag" id="card-back-mastered-tag">กำลังเรียนรู้</span>
+            </div>
+
+            <div class="card-body">
+              <div class="card-role-label">คำตอบ & คำอธิบาย (Answer / Config)</div>
+              <div class="card-answer-text" id="card-back-answer">
+                <!-- Formatted Answer Text / Commands -->
+              </div>
+            </div>
+
+            <div class="card-footer card-back-footer">
+              <div class="self-grade-prompt">คุณจำคำตอบนี้ได้หรือไม่?</div>
+              <div class="self-grade-buttons">
+                <button class="btn btn-grade-fail" id="btn-grade-fail" title="กดลูกศรซ้าย [←]">
+                  <span class="grade-icon">❌</span> ยังจำไม่ได้
+                </button>
+                <button class="btn btn-grade-pass" id="btn-grade-pass" title="กดลูกศรขวา [→]">
+                  <span class="grade-icon">✅</span> จำได้แม่นยำ!
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deck Navigation Buttons -->
+      <div class="deck-controls">
+        <button id="btn-prev-card" class="btn btn-control" title="การ์ดก่อนหน้า (ลูกศรซ้าย)">
+          ← ก่อนหน้า
+        </button>
+        <button id="btn-flip-card" class="btn btn-control btn-highlight">
+          🔄 พลิกการ์ด (Space)
+        </button>
+        <button id="btn-next-card" class="btn btn-control" title="การ์ดถัดไป (ลูกศรขวา)">
+          ถัดไป →
+        </button>
+        <button id="btn-shuffle-deck" class="btn btn-control" title="สุ่มลำดับการ์ด">
+          🔀 สุ่มการ์ด
+        </button>
+      </div>
+
+      <!-- Keyboard Shortcuts Help -->
+      <div class="keyboard-legend">
+        <span>คีย์ลัด:</span>
+        <span class="legend-item"><kbd>Space</kbd> พลิกการ์ด</span>
+        <span class="legend-item"><kbd>←</kbd> ก่อนหน้า / ยังจำไม่ได้</span>
+        <span class="legend-item"><kbd>→</kbd> ถัดไป / จำได้</span>
+      </div>
+    </section>
+
+    <!-- MAIN VIEW 2: CARD MANAGEMENT LIST (To-Do List Style) -->
+    <section id="manage-view" class="view-section">
+      <div class="manage-toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="ค้นหาคำถาม, คำสั่ง, หรือคำตอบ...">
+          <button id="search-clear-btn" class="clear-btn" style="display:none;">✕</button>
+        </div>
+
+        <div class="filter-select-group">
+          <select id="filter-category-select" class="custom-select">
+            <option value="All">ทุกหมวดหมู่</option>
+          </select>
+          <select id="filter-status-select" class="custom-select">
+            <option value="All">สถานะทั้งหมด</option>
+            <option value="1">จำได้แล้ว (Mastered)</option>
+            <option value="0">ยังต้องทบทวน (Learning)</option>
+          </select>
+        </div>
+
+        <div class="deck-data-actions">
+          <button id="btn-export-json" class="btn btn-outline" title="สำรองข้อมูลเป็นไฟล์ JSON">
+            📥 สำรองข้อมูล (Export)
+          </button>
+          <button id="btn-reset-db" class="btn btn-outline btn-danger" title="รีเซ็ตการ์ดกลับเป็นตัวอย่างเริ่มต้น">
+            🔄 คืนค่าตัวอย่าง
+          </button>
+        </div>
+      </div>
+
+      <!-- Card Table / List Container -->
+      <div class="card-list-wrapper">
+        <div class="card-list-header">
+          <div class="col-status">สถานะ</div>
+          <div class="col-category">หมวดหมู่</div>
+          <div class="col-question">คำถาม / หัวข้อ</div>
+          <div class="col-difficulty">ระดับ</div>
+          <div class="col-reviews">ทบทวน</div>
+          <div class="col-actions">จัดการ</div>
+        </div>
+        <div id="cards-table-body" class="card-list-body">
+          <!-- Rendered dynamically via app.js -->
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL: ADD / EDIT FLASHCARD -->
+  <div class="modal-backdrop" id="card-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-title">✨ เพิ่ม Flashcard ใหม่</h3>
+        <button class="modal-close-btn" id="modal-close-btn">✕</button>
+      </div>
+      <form id="card-form" class="modal-form">
+        <input type="hidden" id="form-card-id" value="">
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="form-category">หมวดหมู่ (Category)</label>
+            <input type="text" id="form-category" list="category-datalist" placeholder="เช่น Network Engineering, Computer Architecture" required>
+            <datalist id="category-datalist">
+              <option value="Network Engineering">
+              <option value="Computer Architecture">
+              <option value="System & Theory">
+              <option value="Database">
+            </datalist>
+          </div>
+
+          <div class="form-group" style="width: 140px;">
+            <label for="form-difficulty">ระดับความยาก</label>
+            <select id="form-difficulty" class="custom-select">
+              <option value="Easy">Easy</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="form-question">คำถาม หรือคำสั่งคอนฟิก (Question / Front)</label>
+          <textarea id="form-question" rows="2" placeholder="เช่น Locality of Reference คืออะไร? หรือ คำสั่ง Cisco สำหรับดู IP ทุกพอร์ต" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="form-answer">คำตอบ คำอธิบาย หรือผลลัพธ์ (Answer / Back)</label>
+          <textarea id="form-answer" rows="4" placeholder="กรอกคำอธิบายอย่างละเอียด หรือชุดคำสั่งคอนฟิก" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="form-hint">คำใบ้ (Hint - ไม่บังคับ)</label>
+          <input type="text" id="form-hint" placeholder="คำใบ้สั้นๆ ช่วยฟื้นความจำ">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" id="btn-cancel-modal">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-card">บันทึกการ์ด</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Audio Synthesis Script and Main App Logic -->
+  <script src="/static/js/sound.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
