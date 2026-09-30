@@ -6,7 +6,7 @@ Designed for local development and seamless Vercel hosting.
 
 import os
 import json
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 import database
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -21,6 +21,13 @@ app = Flask(
 def index():
     """Renders the main Flashcard & Quiz web interface."""
     return render_template("index.html")
+
+
+@app.route("/og-image.png")
+@app.route("/favicon.ico")
+def serve_og_image():
+    """Serves the social preview image and favicon."""
+    return send_from_directory(os.path.join(base_dir, "static"), "og-image.png", mimetype="image/png")
 
 
 # -------------------------------------------------------------
