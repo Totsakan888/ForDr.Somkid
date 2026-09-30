@@ -10,7 +10,1042 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+/* ==========================================================================
+   FlashDr. - High Impact Dark Theme & 3D Gamified Flashcard CSS
+   ========================================================================== */
+
+:root {
+  --bg-main: #090d16;
+  --bg-card: rgba(18, 25, 43, 0.75);
+  --bg-card-solid: #111827;
+  --bg-glass: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(139, 92, 246, 0.3);
+
+  /* Vibrant Accent Palette */
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --primary-glow: rgba(139, 92, 246, 0.4);
+  --cyan: #06b6d4;
+  --cyan-glow: rgba(6, 182, 212, 0.3);
+  --emerald: #10b981;
+  --emerald-glow: rgba(16, 185, 129, 0.3);
+  --amber: #f59e0b;
+  --rose: #f43f5e;
+
+  /* Typography */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --font-family: 'Plus Jakarta Sans', 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-full: 9999px;
+  --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body.dark-theme {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --------------------------------------------------------------------------
+   Ambient Neon Glow Orbs
+   -------------------------------------------------------------------------- */
+.ambient-glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+.glow-1 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #7c3aed, transparent 70%);
+  top: -100px;
+  left: -100px;
+}
+.glow-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #06b6d4, transparent 70%);
+  bottom: 50px;
+  right: -80px;
+}
+.glow-3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #ec4899, transparent 70%);
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.15;
+}
+
+/* Confetti Fullscreen Canvas */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* --------------------------------------------------------------------------
+   App Container & Header
+   -------------------------------------------------------------------------- */
+.app-container {
+  position: relative;
+  z-index: 10;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 20px 80px 20px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.brand-text h1 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-version {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Gamification Badges */
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.streak-pill {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+}
+
+.progress-pill {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+}
+
+.icon-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* --------------------------------------------------------------------------
+   Navigation & Tabs
+   -------------------------------------------------------------------------- */
+.mode-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tabs-container {
+  display: flex;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.nav-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+.nav-tab:hover {
+  color: var(--text-main);
+}
+
+.nav-tab.active {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(6, 182, 212, 0.2));
+  color: #ffffff;
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border: 1px solid transparent;
+  text-decoration: none;
+  min-height: 42px;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+  box-shadow: 0 4px 16px var(--primary-glow);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-danger {
+  color: #fda4af;
+  border-color: rgba(244, 63, 94, 0.3);
+}
+.btn-danger:hover {
+  background: rgba(244, 63, 94, 0.15);
+  border-color: var(--rose);
+}
+
+/* View Sections */
+.view-section {
+  display: none;
+  animation: fadeIn 0.3s ease-out;
+}
+.view-section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --------------------------------------------------------------------------
+   FLASHCARD VIEW: Filter & Progress
+   -------------------------------------------------------------------------- */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.filter-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.categories-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.category-chip {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-smooth);
+}
+.category-chip:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+.category-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+/* Deck Status & Progress Fill */
+.deck-status {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(12px);
+}
+
+.status-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4, #10b981);
+  border-radius: var(--radius-full);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   THE 3D FLIP FLASHCARD
+   -------------------------------------------------------------------------- */
+.flashcard-scene {
+  perspective: 1400px;
+  margin: 0 auto 24px auto;
+  width: 100%;
+  max-width: 720px;
+  height: 420px;
+}
+
+.flashcard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.flashcard.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(145deg, rgba(26, 34, 53, 0.85), rgba(15, 23, 42, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.08);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.flashcard:hover .card-face {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 35px var(--primary-glow);
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.98));
+  border-color: rgba(6, 182, 212, 0.25);
+}
+
+/* Card Elements */
+.card-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-category {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.card-difficulty {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.card-role-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.card-question {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--text-main);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.card-answer-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  max-height: 210px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Code highlight inside answer */
+.card-answer-text code,
+.command-block {
+  font-family: var(--font-mono);
+  background: #090e17;
+  color: #22d3ee;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+/* Hints */
+.hint-container {
+  margin-top: 14px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.hint-content {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid #f59e0b;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #fcd34d;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-hint {
+  background: transparent;
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+  color: #f59e0b;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.btn-hint:hover {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+/* Flip instruction label */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border-color);
+  padding-top: 14px;
+}
+
+.key-tag {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-main);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+/* Self-Grading Buttons on Back Face */
+.card-back-footer {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.self-grade-prompt {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.self-grade-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn-grade-fail,
+.btn-grade-pass {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-grade-fail {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: #fda4af;
+}
+.btn-grade-fail:hover {
+  background: rgba(244, 63, 94, 0.25);
+  border-color: var(--rose);
+  transform: translateY(-2px);
+}
+
+.btn-grade-pass {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+}
+.btn-grade-pass:hover {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: var(--emerald);
+  box-shadow: 0 4px 16px var(--emerald-glow);
+  transform: translateY(-2px);
+}
+
+/* Deck Navigation Controls */
+.deck-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-control {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.btn-control:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-highlight {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(6, 182, 212, 0.3));
+  border-color: var(--primary);
+  color: white;
+}
+
+.keyboard-legend {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   MANAGE VIEW: To-Do Style List & Table
+   -------------------------------------------------------------------------- */
+.manage-toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.search-box input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 36px 10px 38px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  transition: var(--transition-smooth);
+}
+.search-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.filter-select-group {
+  display: flex;
+  gap: 8px;
+}
+
+.custom-select {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.custom-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.deck-data-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Card Table */
+.card-list-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+.card-list-header {
+  display: grid;
+  grid-template-columns: 80px 140px 1fr 100px 90px 100px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.card-list-body {
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.card-list-row {
+  display: grid;
+  grid-template-columns: 80px 140px 1fr 100px 90px 100px;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 14px;
+  transition: var(--transition-smooth);
+}
+.card-list-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.toggle-status-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+.toggle-status-btn:hover {
+  transform: scale(1.2);
+}
+
+.col-question .q-text {
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+.col-question .a-preview {
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+}
+
+.category-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+.difficulty-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+.diff-easy { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+.diff-medium { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+.diff-hard { background: rgba(244, 63, 94, 0.15); color: #fda4af; }
+
+.action-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 15px;
+  padding: 6px;
+  border-radius: 4px;
+  transition: var(--transition-smooth);
+}
+.action-icon-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.08);
+}
+.action-icon-btn.btn-delete:hover {
+  color: var(--rose);
+  background: rgba(244, 63, 94, 0.15);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+}
+.empty-state-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   MODAL DIALOG (Add / Edit Card)
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal-dialog {
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 580px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px var(--primary-glow);
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: pointer;
+}
+.modal-close-btn:hover {
+  color: var(--text-main);
+}
+
+.modal-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+.flex-1 { flex: 1; }
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  transition: var(--transition-smooth);
+}
+.form-group textarea {
+  resize: vertical;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVENESS (Mobile-First)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .flashcard-scene {
+    height: 480px;
+  }
+  .card-face {
+    padding: 20px;
+  }
+  .card-question {
+    font-size: 18px;
+  }
+  .card-answer-text {
+    font-size: 14px;
+  }
+  .card-list-header {
+    display: none;
+  }
+  .card-list-row {
+    grid-template-columns: 40px 1fr 60px;
+    gap: 8px;
+  }
+  .col-category,
+  .col-difficulty,
+  .col-reviews {
+    display: none;
+  }
+}
+
+</style>
 </head>
 <body class="dark-theme">
   <!-- Ambient background glow elements -->
@@ -278,7 +1313,873 @@
   </div>
 
   <!-- Audio Synthesis Script and Main App Logic -->
-  <script src="/static/js/sound.js"></script>
-  <script src="/static/js/app.js"></script>
+  
+  <script>
+/**
+ * sound.js - Lightweight procedural Web Audio API sound effects synthesizer
+ * Generates crisp, playful UI sounds without needing external MP3 audio files.
+ */
+
+class SoundController {
+  constructor() {
+    this.ctx = null;
+    this.enabled = localStorage.getItem('sound_enabled') !== 'false';
+  }
+
+  initContext() {
+    if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  toggleSound() {
+    this.enabled = !this.enabled;
+    localStorage.setItem('sound_enabled', this.enabled);
+    return this.enabled;
+  }
+
+  playFlip() {
+    if (!this.enabled) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const now = this.ctx.currentTime;
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(420, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.12);
+  }
+
+  playSuccess() {
+    if (!this.enabled) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5 Major triad
+
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const startTime = now + idx * 0.08;
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      gain.gain.setValueAtTime(0.18, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.22);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.22);
+    });
+  }
+
+  playFail() {
+    if (!this.enabled) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.exponentialRampToValueAtTime(110, now + 0.18);
+
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.18);
+  }
+
+  playVictory() {
+    if (!this.enabled) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const startTime = now + idx * 0.12;
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      gain.gain.setValueAtTime(0.2, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.35);
+    });
+  }
+}
+
+window.soundCtrl = new SoundController();
+
+
+/**
+ * app.js - Main Flashcard & Quiz Application Logic
+ * Implements 3D card flipping, keyboard controls, API syncing, and gamification.
+ */
+
+// ==========================================
+// Application State
+// ==========================================
+const state = {
+  cards: [],
+  filteredCards: [],
+  currentIndex: 0,
+  isFlipped: false,
+  selectedCategory: 'All',
+  searchQuery: '',
+  statusFilter: 'All',
+  streak: parseInt(localStorage.getItem('flashdr_streak') || '0', 10),
+  activeTab: 'study',
+};
+
+// ==========================================
+// DOM Elements
+// ==========================================
+const DOM = {
+  // Navigation & Tabs
+  tabs: document.querySelectorAll('.nav-tab'),
+  views: document.querySelectorAll('.view-section'),
+  totalBadge: document.getElementById('total-count-badge'),
+  streakCounter: document.getElementById('streak-counter'),
+  masteryPercent: document.getElementById('mastery-percent'),
+  soundBtn: document.getElementById('sound-toggle-btn'),
+  soundIcon: document.getElementById('sound-icon'),
+
+  // Flashcard View
+  studyCategories: document.getElementById('study-categories'),
+  cardIndexIndicator: document.getElementById('card-index-indicator'),
+  progressFill: document.getElementById('study-progress-fill'),
+  mainCard: document.getElementById('main-flashcard'),
+  
+  // Card Faces
+  frontCategory: document.getElementById('card-front-category'),
+  frontDifficulty: document.getElementById('card-front-difficulty'),
+  frontQuestion: document.getElementById('card-front-question'),
+  hintWrapper: document.getElementById('hint-wrapper'),
+  frontHint: document.getElementById('card-front-hint'),
+  btnToggleHint: document.getElementById('btn-toggle-hint'),
+
+  backCategory: document.getElementById('card-back-category'),
+  backMasteredTag: document.getElementById('card-back-mastered-tag'),
+  backAnswer: document.getElementById('card-back-answer'),
+
+  btnPrev: document.getElementById('btn-prev-card'),
+  btnFlip: document.getElementById('btn-flip-card'),
+  btnNext: document.getElementById('btn-next-card'),
+  btnShuffle: document.getElementById('btn-shuffle-deck'),
+  btnGradeFail: document.getElementById('btn-grade-fail'),
+  btnGradePass: document.getElementById('btn-grade-pass'),
+
+  // Manage View
+  searchInput: document.getElementById('search-input'),
+  searchClearBtn: document.getElementById('search-clear-btn'),
+  filterCatSelect: document.getElementById('filter-category-select'),
+  filterStatusSelect: document.getElementById('filter-status-select'),
+  cardsTableBody: document.getElementById('cards-table-body'),
+  btnExport: document.getElementById('btn-export-json'),
+  btnReset: document.getElementById('btn-reset-db'),
+
+  // Modal
+  modal: document.getElementById('card-modal'),
+  modalTitle: document.getElementById('modal-title'),
+  modalCloseBtn: document.getElementById('modal-close-btn'),
+  btnCancelModal: document.getElementById('btn-cancel-modal'),
+  cardForm: document.getElementById('card-form'),
+  btnAddModal: document.getElementById('btn-add-modal'),
+  formId: document.getElementById('form-card-id'),
+  formCategory: document.getElementById('form-category'),
+  formDifficulty: document.getElementById('form-difficulty'),
+  formQuestion: document.getElementById('form-question'),
+  formAnswer: document.getElementById('form-answer'),
+  formHint: document.getElementById('form-hint'),
+};
+
+// ==========================================
+// Initialization
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  initEventListeners();
+  updateStreakUI();
+  updateSoundUI();
+  fetchCardsAndInit();
+});
+
+// ==========================================
+// Event Listeners Setup
+// ==========================================
+function initEventListeners() {
+  // Tabs switching
+  DOM.tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      switchTab(target);
+    });
+  });
+
+  // Sound Toggle
+  DOM.soundBtn.addEventListener('click', () => {
+    const isEnabled = window.soundCtrl.toggleSound();
+    updateSoundUI();
+  });
+
+  // Flashcard Flip & Navigation
+  DOM.mainCard.addEventListener('click', (e) => {
+    // Don't flip if clicking self-grade buttons or hint toggle
+    if (e.target.closest('.self-grade-buttons') || e.target.closest('.btn-hint')) return;
+    toggleCardFlip();
+  });
+
+  DOM.btnFlip.addEventListener('click', toggleCardFlip);
+  DOM.btnPrev.addEventListener('click', showPrevCard);
+  DOM.btnNext.addEventListener('click', showNextCard);
+  DOM.btnShuffle.addEventListener('click', shuffleDeck);
+
+  DOM.btnToggleHint.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isVisible = DOM.hintWrapper.style.display !== 'none';
+    DOM.hintWrapper.style.display = isVisible ? 'none' : 'block';
+  });
+
+  // Self Grading Buttons
+  DOM.btnGradePass.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handleSelfGrade(true);
+  });
+
+  DOM.btnGradeFail.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handleSelfGrade(false);
+  });
+
+  // Keyboard Shortcuts
+  document.addEventListener('keydown', handleGlobalKeydown);
+
+  // Manage View Filters & Search
+  DOM.searchInput.addEventListener('input', (e) => {
+    state.searchQuery = e.target.value.trim().toLowerCase();
+    DOM.searchClearBtn.style.display = state.searchQuery ? 'block' : 'none';
+    applyFilters();
+  });
+
+  DOM.searchClearBtn.addEventListener('click', () => {
+    DOM.searchInput.value = '';
+    state.searchQuery = '';
+    DOM.searchClearBtn.style.display = 'none';
+    applyFilters();
+  });
+
+  DOM.filterCatSelect.addEventListener('change', (e) => {
+    state.selectedCategory = e.target.value;
+    applyFilters();
+    updateCategoryChipsUI();
+  });
+
+  DOM.filterStatusSelect.addEventListener('change', (e) => {
+    state.statusFilter = e.target.value;
+    applyFilters();
+  });
+
+  // Export & Reset
+  DOM.btnExport.addEventListener('click', () => {
+    window.location.href = '/api/export';
+  });
+
+  DOM.btnReset.addEventListener('click', handleResetDB);
+
+  // Modal handlers
+  DOM.btnAddModal.addEventListener('click', () => openCardModal());
+  DOM.modalCloseBtn.addEventListener('click', closeCardModal);
+  DOM.btnCancelModal.addEventListener('click', closeCardModal);
+  DOM.modal.addEventListener('click', (e) => {
+    if (e.target === DOM.modal) closeCardModal();
+  });
+  DOM.cardForm.addEventListener('submit', handleFormSubmit);
+}
+
+// ==========================================
+// Keyboard Controls
+// ==========================================
+function handleGlobalKeydown(e) {
+  // If typing inside input or textarea, ignore shortcuts
+  const activeTag = document.activeElement ? document.activeElement.tagName : '';
+  if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') {
+    if (e.key === 'Escape') closeCardModal();
+    return;
+  }
+
+  if (state.activeTab !== 'study' || state.filteredCards.length === 0) return;
+
+  if (e.code === 'Space') {
+    e.preventDefault();
+    toggleCardFlip();
+  } else if (e.code === 'ArrowLeft') {
+    e.preventDefault();
+    if (state.isFlipped) {
+      handleSelfGrade(false);
+    } else {
+      showPrevCard();
+    }
+  } else if (e.code === 'ArrowRight') {
+    e.preventDefault();
+    if (state.isFlipped) {
+      handleSelfGrade(true);
+    } else {
+      showNextCard();
+    }
+  }
+}
+
+// ==========================================
+// API Operations & Data Sync
+// ==========================================
+async function fetchCardsAndInit() {
+  try {
+    const res = await fetch('/api/cards');
+    const data = await res.json();
+    if (data.success) {
+      state.cards = data.cards;
+      refreshCategoriesList();
+      applyFilters();
+      fetchStats();
+    }
+  } catch (err) {
+    console.error('Error fetching cards:', err);
+  }
+}
+
+async function fetchStats() {
+  try {
+    const res = await fetch('/api/stats');
+    const data = await res.json();
+    if (data.success) {
+      DOM.masteryPercent.textContent = `${data.stats.mastery_rate}%`;
+      DOM.totalBadge.textContent = data.stats.total_cards;
+    }
+  } catch (err) {
+    console.error('Error fetching stats:', err);
+  }
+}
+
+// ==========================================
+// Flashcard Navigation & Interaction
+// ==========================================
+function toggleCardFlip() {
+  state.isFlipped = !state.isFlipped;
+  DOM.mainCard.classList.toggle('is-flipped', state.isFlipped);
+  window.soundCtrl.playFlip();
+}
+
+function resetFlip() {
+  state.isFlipped = false;
+  DOM.mainCard.classList.remove('is-flipped');
+}
+
+function renderCurrentCard() {
+  resetFlip();
+  DOM.hintWrapper.style.display = 'none';
+
+  if (state.filteredCards.length === 0) {
+    DOM.frontCategory.textContent = 'Empty';
+    DOM.frontDifficulty.textContent = '-';
+    DOM.frontQuestion.textContent = 'ไม่มีการ์ดในหมวดหมู่นี้ — กด "+ เพิ่มการ์ดใหม่" ได้เลย!';
+    DOM.btnToggleHint.style.display = 'none';
+    DOM.cardIndexIndicator.textContent = '0 / 0';
+    DOM.progressFill.style.width = '0%';
+    return;
+  }
+
+  // Bound index
+  if (state.currentIndex >= state.filteredCards.length) {
+    state.currentIndex = 0;
+  } else if (state.currentIndex < 0) {
+    state.currentIndex = state.filteredCards.length - 1;
+  }
+
+  const card = state.filteredCards[state.currentIndex];
+
+  // Front Face
+  DOM.frontCategory.textContent = card.category;
+  DOM.frontDifficulty.textContent = card.difficulty;
+  DOM.frontQuestion.textContent = card.question;
+
+  if (card.hint && card.hint.trim() !== '') {
+    DOM.frontHint.textContent = card.hint;
+    DOM.btnToggleHint.style.display = 'inline-block';
+  } else {
+    DOM.btnToggleHint.style.display = 'none';
+  }
+
+  // Back Face
+  DOM.backCategory.textContent = card.category;
+  DOM.backMasteredTag.textContent = card.mastered ? '⭐ จำได้แล้ว' : '📖 กำลังเรียนรู้';
+  DOM.backMasteredTag.style.color = card.mastered ? '#34d399' : '#fbbf24';
+
+  // Format code blocks or command outputs
+  DOM.backAnswer.innerHTML = formatAnswerContent(card.answer);
+
+  // Indicators & Progress bar
+  DOM.cardIndexIndicator.textContent = `การ์ดที่ ${state.currentIndex + 1} จาก ${state.filteredCards.length}`;
+  const progressPercent = ((state.currentIndex + 1) / state.filteredCards.length) * 100;
+  DOM.progressFill.style.width = `${progressPercent}%`;
+}
+
+function formatAnswerContent(text) {
+  if (!text) return '';
+  // Highlight Cisco commands or terminal prefixes
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  const formatted = escaped.replace(
+    /(^(?:#|\(config[^\)]*\)#|>)\s*.*$)/gm,
+    '<div class="command-block"><code>$1</code></div>'
+  );
+
+  return formatted;
+}
+
+function showNextCard() {
+  if (state.filteredCards.length <= 1) return;
+  state.currentIndex = (state.currentIndex + 1) % state.filteredCards.length;
+  renderCurrentCard();
+}
+
+function showPrevCard() {
+  if (state.filteredCards.length <= 1) return;
+  state.currentIndex = (state.currentIndex - 1 + state.filteredCards.length) % state.filteredCards.length;
+  renderCurrentCard();
+}
+
+function shuffleDeck() {
+  if (state.filteredCards.length <= 1) return;
+  // Fisher-Yates shuffle
+  for (let i = state.filteredCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.filteredCards[i], state.filteredCards[j]] = [state.filteredCards[j], state.filteredCards[i]];
+  }
+  state.currentIndex = 0;
+  renderCurrentCard();
+  window.soundCtrl.playFlip();
+}
+
+// Self-Grading Review (Pass / Fail)
+async function handleSelfGrade(remembered) {
+  if (state.filteredCards.length === 0) return;
+  const currentCard = state.filteredCards[state.currentIndex];
+
+  if (remembered) {
+    window.soundCtrl.playSuccess();
+    state.streak += 1;
+  } else {
+    window.soundCtrl.playFail();
+    state.streak = Math.max(0, state.streak - 1);
+  }
+
+  saveStreak();
+  updateStreakUI();
+
+  try {
+    const res = await fetch(`/api/cards/${currentCard.id}/review`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ remembered }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      // Update local object
+      currentCard.mastered = data.card.mastered;
+      currentCard.review_count = data.card.review_count;
+      fetchStats();
+      renderManageTable();
+    }
+  } catch (err) {
+    console.error('Error submitting review:', err);
+  }
+
+  // Check if reached deck completion
+  if (state.currentIndex === state.filteredCards.length - 1 && state.streak >= 3) {
+    triggerConfetti();
+    window.soundCtrl.playVictory();
+  }
+
+  // Advance smoothly to next card
+  setTimeout(() => {
+    showNextCard();
+  }, 220);
+}
+
+// ==========================================
+// Filtering & Categories
+// ==========================================
+function applyFilters() {
+  state.filteredCards = state.cards.filter((card) => {
+    // Category filter
+    const matchesCat = state.selectedCategory === 'All' || card.category === state.selectedCategory;
+
+    // Status filter
+    let matchesStatus = true;
+    if (state.statusFilter === '1') matchesStatus = card.mastered === 1;
+    if (state.statusFilter === '0') matchesStatus = card.mastered === 0;
+
+    // Search query
+    let matchesSearch = true;
+    if (state.searchQuery) {
+      const q = state.searchQuery;
+      matchesSearch =
+        card.question.toLowerCase().includes(q) ||
+        card.answer.toLowerCase().includes(q) ||
+        (card.hint && card.hint.toLowerCase().includes(q));
+    }
+
+    return matchesCat && matchesStatus && matchesSearch;
+  });
+
+  state.currentIndex = 0;
+  renderCurrentCard();
+  renderManageTable();
+}
+
+function refreshCategoriesList() {
+  const categories = Array.from(new Set(state.cards.map((c) => c.category))).sort();
+
+  // Populate Study Category Chips
+  DOM.studyCategories.innerHTML = '';
+  const allChip = document.createElement('button');
+  allChip.className = `category-chip ${state.selectedCategory === 'All' ? 'active' : ''}`;
+  allChip.dataset.category = 'All';
+  allChip.textContent = 'ทั้งหมด';
+  allChip.onclick = () => selectCategory('All');
+  DOM.studyCategories.appendChild(allChip);
+
+  // Populate Select in Manage View
+  DOM.filterCatSelect.innerHTML = '<option value="All">ทุกหมวดหมู่</option>';
+
+  categories.forEach((cat) => {
+    // Chip
+    const chip = document.createElement('button');
+    chip.className = `category-chip ${state.selectedCategory === cat ? 'active' : ''}`;
+    chip.dataset.category = cat;
+    chip.textContent = cat;
+    chip.onclick = () => selectCategory(cat);
+    DOM.studyCategories.appendChild(chip);
+
+    // Option
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    if (state.selectedCategory === cat) opt.selected = true;
+    DOM.filterCatSelect.appendChild(opt);
+  });
+}
+
+function selectCategory(category) {
+  state.selectedCategory = category;
+  updateCategoryChipsUI();
+  DOM.filterCatSelect.value = category;
+  applyFilters();
+}
+
+function updateCategoryChipsUI() {
+  document.querySelectorAll('.category-chip').forEach((chip) => {
+    chip.classList.toggle('active', chip.dataset.category === state.selectedCategory);
+  });
+}
+
+// ==========================
+// To-Do Style Manage Table
+// ==========================
+function renderManageTable() {
+  DOM.cardsTableBody.innerHTML = '';
+
+  if (state.filteredCards.length === 0) {
+    DOM.cardsTableBody.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <p>ไม่พบ Flashcard ที่ตรงตามเงื่อนไข</p>
+      </div>
+    `;
+    return;
+  }
+
+  state.filteredCards.forEach((card) => {
+    const row = document.createElement('div');
+    row.className = 'card-list-row';
+
+    const diffClass =
+      card.difficulty === 'Easy'
+        ? 'diff-easy'
+        : card.difficulty === 'Hard'
+        ? 'diff-hard'
+        : 'diff-medium';
+
+    row.innerHTML = `
+      <div class="col-status">
+        <button class="toggle-status-btn" title="คลิกเพื่อสลับสถานะ (เหมือนทำ To-Do เสร็จแล้ว)" onclick="toggleMasteredStatus(${card.id})">
+          ${card.mastered ? '⭐' : '⚪'}
+        </button>
+      </div>
+      <div class="col-category">
+        <span class="category-tag">${card.category}</span>
+      </div>
+      <div class="col-question">
+        <div class="q-text">${card.question}</div>
+        <div class="a-preview">${card.answer.replace(/\n/g, ' ')}</div>
+      </div>
+      <div class="col-difficulty">
+        <span class="difficulty-tag ${diffClass}">${card.difficulty}</span>
+      </div>
+      <div class="col-reviews" style="color: var(--text-dim); font-size: 13px;">
+        ${card.review_count} ครั้ง
+      </div>
+      <div class="col-actions">
+        <button class="action-icon-btn btn-edit" title="แก้ไขการ์ด" onclick="editCard(${card.id})">✏️</button>
+        <button class="action-icon-btn btn-delete" title="ลบการ์ด" onclick="confirmDeleteCard(${card.id})">🗑️</button>
+      </div>
+    `;
+
+    DOM.cardsTableBody.appendChild(row);
+  });
+}
+
+// Global functions for inline table onclick
+window.toggleMasteredStatus = async function (id) {
+  try {
+    const res = await fetch(`/api/cards/${id}/toggle`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      window.soundCtrl.playFlip();
+      const targetCard = state.cards.find((c) => c.id === id);
+      if (targetCard) targetCard.mastered = data.card.mastered;
+      applyFilters();
+      fetchStats();
+    }
+  } catch (err) {
+    console.error('Error toggling card status:', err);
+  }
+};
+
+window.editCard = function (id) {
+  const card = state.cards.find((c) => c.id === id);
+  if (!card) return;
+  openCardModal(card);
+};
+
+window.confirmDeleteCard = async function (id) {
+  if (confirm('คุณต้องการลบ Flashcard ใบนี้ใช่หรือไม่?')) {
+    try {
+      const res = await fetch(`/api/cards/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        state.cards = state.cards.filter((c) => c.id !== id);
+        applyFilters();
+        fetchStats();
+      }
+    } catch (err) {
+      console.error('Error deleting card:', err);
+    }
+  }
+};
+
+// ==========================
+// Modal & Form Handling
+// ==========================
+function openCardModal(card = null) {
+  DOM.cardForm.reset();
+  if (card) {
+    DOM.modalTitle.textContent = '✏️ แก้ไข Flashcard';
+    DOM.formId.value = card.id;
+    DOM.formCategory.value = card.category;
+    DOM.formDifficulty.value = card.difficulty;
+    DOM.formQuestion.value = card.question;
+    DOM.formAnswer.value = card.answer;
+    DOM.formHint.value = card.hint || '';
+  } else {
+    DOM.modalTitle.textContent = '✨ เพิ่ม Flashcard ใหม่';
+    DOM.formId.value = '';
+    DOM.formCategory.value = state.selectedCategory !== 'All' ? state.selectedCategory : '';
+    DOM.formDifficulty.value = 'Medium';
+  }
+  DOM.modal.classList.add('open');
+  DOM.formQuestion.focus();
+}
+
+function closeCardModal() {
+  DOM.modal.classList.remove('open');
+}
+
+async function handleFormSubmit(e) {
+  e.preventDefault();
+
+  const id = DOM.formId.value;
+  const payload = {
+    category: DOM.formCategory.value.trim() || 'General',
+    difficulty: DOM.formDifficulty.value,
+    question: DOM.formQuestion.value.trim(),
+    answer: DOM.formAnswer.value.trim(),
+    hint: DOM.formHint.value.trim(),
+  };
+
+  const isEdit = Boolean(id);
+  const url = isEdit ? `/api/cards/${id}` : '/api/cards';
+  const method = isEdit ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeCardModal();
+      window.soundCtrl.playSuccess();
+      await fetchCardsAndInit();
+    } else {
+      alert(data.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+    }
+  } catch (err) {
+    console.error('Error saving card:', err);
+  }
+}
+
+async function handleResetDB() {
+  if (confirm('คุณต้องการรีเซ็ตข้อมูลเป็นชุดตัวอย่างเริ่มต้น (Locality of Reference & Network Config) หรือไม่?')) {
+    try {
+      const res = await fetch('/api/reset', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        state.streak = 0;
+        saveStreak();
+        updateStreakUI();
+        await fetchCardsAndInit();
+      }
+    } catch (err) {
+      console.error('Error resetting database:', err);
+    }
+  }
+}
+
+// ==========================
+// Gamification & Helpers
+// ==========================
+function switchTab(tabName) {
+  state.activeTab = tabName;
+  DOM.tabs.forEach((t) => t.classList.toggle('active', t.dataset.tab === tabName));
+  DOM.views.forEach((v) => v.classList.toggle('active', v.id === `${tabName}-view`));
+
+  if (tabName === 'study') {
+    renderCurrentCard();
+  } else {
+    renderManageTable();
+  }
+}
+
+function saveStreak() {
+  localStorage.setItem('flashdr_streak', state.streak.toString());
+}
+
+function updateStreakUI() {
+  DOM.streakCounter.textContent = state.streak;
+}
+
+function updateSoundUI() {
+  DOM.soundIcon.textContent = window.soundCtrl.enabled ? '🔊' : '🔇';
+}
+
+// Procedural Zero-Dependency Confetti
+function triggerConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const confettiCount = 120;
+  const particles = [];
+  const colors = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#ffffff'];
+
+  for (let i = 0; i < confettiCount; i++) {
+    particles.push({
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 18,
+      vy: (Math.random() - 0.7) * 18,
+      size: Math.random() * 8 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1,
+      decay: Math.random() * 0.02 + 0.015,
+      tilt: Math.random() * 10,
+    });
+  }
+
+  let animationFrame;
+  function updateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+
+    particles.forEach((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.35; // gravity
+      p.vx *= 0.98; // air drag
+      p.alpha -= p.decay;
+
+      if (p.alpha > 0) {
+        alive = true;
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+
+    if (alive) {
+      animationFrame = requestAnimationFrame(updateConfetti);
+    } else {
+      cancelAnimationFrame(animationFrame);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  updateConfetti();
+}
+
+</script>
 </body>
 </html>
